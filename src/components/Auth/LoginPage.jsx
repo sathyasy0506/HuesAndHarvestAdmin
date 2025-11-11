@@ -1,26 +1,33 @@
 import { useState } from "react";
 import { Lock, Mail, LogIn, AlertCircle } from "lucide-react";
 import { useAuth } from "../../Contexts/AuthContext";
+import { showToast } from "../Common/Toaster";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setFormError("");
     setLoading(true);
 
     try {
       const { error } = await signIn(email, password);
       if (error) {
-        setError(error.message || "Invalid email or password");
+        const msg =
+          error.message?.replace(/_/g, " ") || "Invalid email or password";
+        setFormError(msg);
+        showToast(msg, "error");
+      } else {
+        // AuthContext handles navigation (App shows Dashboard when user is set)
       }
-    } catch (err) {
-      setError("An unexpected error occurred");
+    } catch {
+      setFormError("An unexpected error occurred");
+      showToast("Unexpected error", "error");
     } finally {
       setLoading(false);
     }
@@ -49,14 +56,6 @@ export function LoginPage() {
               Welcome back! Please sign in to continue.
             </p>
           </div>
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-3">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label
@@ -118,12 +117,6 @@ export function LoginPage() {
               )}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-slate-500">
-              Demo credentials: admin@example.com / password
-            </p>
-          </div>
         </div>
       </div>
     </div>
