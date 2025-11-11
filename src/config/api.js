@@ -6,4 +6,5 @@ export const ENDPOINTS = {
   VALIDATE: `${BASE_URL}validate_token.php`,
   REFRESH: `${BASE_URL}refresh_token.php`,
   LOGOUT: `${BASE_URL}logout.php`,
+  PROFILE: `${BASE_URL}profile.php`,
 };

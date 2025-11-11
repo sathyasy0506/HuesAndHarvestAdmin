@@ -117,6 +117,27 @@ export function AuthProvider({ children }) {
     return { error: null };
   };
 
+  const getProfile = async () => {
+    const res = await authFetch(ENDPOINTS.PROFILE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ access_token: accessToken }),
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || data.status !== "success") {
+      return null;
+    }
+
+    return {
+      id: data.user_id,
+      email: data.user_email,
+      first_name: data.first_name,
+      last_name: data.last_name,
+    };
+  };
+
   const validate = async () => {
     if (!accessToken) return false;
 
@@ -268,6 +289,7 @@ export function AuthProvider({ children }) {
       validate,
       refresh,
       authFetch,
+      getProfile,
     }),
     [user, accessToken, expiresAt, refreshToken, refreshExpiresAt, loading]
   );
