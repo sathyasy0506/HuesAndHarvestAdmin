@@ -1,6 +1,8 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./Contexts/AuthContext";
-import { LoginPage } from "./components/Dashboard/LoginPage";
-import { Dashboard } from "./components/Dashboard/Dashboard";
+import { LoginPage } from "./components/Auth/LoginPage";
+import { DashboardLayout } from "./components/Dashboard/Dashboard";
+import Toaster from "./components/Common/Toaster";
 
 function App() {
   const { user, loading } = useAuth();
@@ -13,11 +15,24 @@ function App() {
     );
   }
 
-  if (!user) {
-    return <LoginPage />;
-  }
-
-  return <Dashboard />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        {!user ? (
+          <Route path="/login" element={<LoginPage />} />
+        ) : (
+          <Route path="/dashboard/*" element={<DashboardLayout />} />
+        )}
+        <Route
+          path="*"
+          element={
+            <Navigate to={user ? "/dashboard/orders" : "/login"} replace />
+          }
+        />
+      </Routes>
+      <Toaster />
+    </BrowserRouter>
+  );
 }
 
 export default App;
